@@ -5,9 +5,13 @@
     <string name="action_about">About</string>
     <string name="title_activity_about">About</string>
     <string translatable="false" name="channel_name">batteryNotifier</string>
-    <string name="channel_description">Notify the user about battery usage</string>
+    <string name="channel_description_alert">Notify the user about battery usage</string>
+    <string name="channel_description_sticky">Service notification</string>
     <string name="low_battery">Low battery level threshold:</string>
     <string name="high_battery">High battery level threshold:</string>
     <string name="label_off">Off</string>
+    <string name="sticky_text_collapsed">Battery Notifier is running in the background.</string>
+    <string name="sticky_text_expanded">Battery Notifier is running in the background.\n
+        Open the app to change settings.</string>
 
 </resources>

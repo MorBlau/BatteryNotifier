@@ -1,11 +1,16 @@
 package com.mblau.batterynotifier.listener
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.mblau.batterynotifier.Constants.VALUE_OFF
-import com.mblau.batterynotifier.SharedPreferencesRepository
+import com.mblau.batterynotifier.*
 
-class SharedPreferencesChangeListener :
+private const val TAG = "SharedPrefsChangeListen"
+
+class SharedPreferencesChangeListener(private val context: MainActivity) :
     SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private val myNotificationManager: MyNotificationManager = MyNotificationManager()
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String?) {
         when (key) {
@@ -17,18 +22,34 @@ class SharedPreferencesChangeListener :
     }
 
     private fun onServiceEnabledChanged() {
-        val serviceEnabled = SharedPreferencesRepository.isServiceEnabled()
+        Log.d(TAG, "onServiceEnabledChanged called.")
+
+        val serviceEnabled = SharedPreferencesRepository.isServiceActive()
+        val color = context.resources.getColor(
+            if (serviceEnabled) R.color.colorOn else R.color.colorOff,
+            context.theme)
+        val smallText = "Hello world!!!"
+        val bigText =
+            "$smallText\n" +
+                    "Active: ${if (serviceEnabled) "yes" else "no"}.\n" +
+                    "High battery threshold: ${SharedPreferencesRepository.getHighBatteryThreshold()}.\n" +
+                    "Low battery threshold: ${SharedPreferencesRepository.getLowBatteryThreshold()}."
+
+        myNotificationManager.notify(context, color, smallText, bigText)
+
+        Log.d(TAG, "onServiceEnabledChanged service enabled: $serviceEnabled.")
         when {
-            serviceEnabled -> true //TODO("create service and start")
-            else -> true //TODO("destroy service (all services in case more than one is running?)")
+            serviceEnabled -> handleServiceEnabled()
+            else -> stopBatteryService()
         }
     }
 
     private fun onHighBatteryThresholdChanged() {
         val highBatteryThreshold = SharedPreferencesRepository.getHighBatteryThreshold()
-        when (highBatteryThreshold) {
-            VALUE_OFF -> true //TODO("turn off high battery service/listener or destroy service if needed")
-            else -> true //TODO("if service is running, update service with new value)")
+        when {
+            (highBatteryThreshold == VALUE_OFF) and (!SharedPreferencesRepository.isLowBatteryServiceEnabled()) ->
+                stopBatteryService() // all services are disabled, shut down service
+            SharedPreferencesRepository.isServiceActive() -> updateBatteryService()
         }
     }
 
@@ -42,6 +63,25 @@ class SharedPreferencesChangeListener :
 
     private fun onNotificationSoundChanged() {
         // TODO("add notification sound")
+    }
+
+    private fun handleServiceEnabled() {
+        if (SharedPreferencesRepository.isAnyServiceEnabled()) startBatteryService()
+        else return // TODO: add toast - no threshold defined
+    }
+
+    private fun startBatteryService() {
+        context.setFabColor(R.color.colorOn)
+        BatteryCheckupService.start(context)
+    }
+
+    private fun stopBatteryService() {
+        context.setFabColor(R.color.colorOff)
+        BatteryCheckupService.stop(context)
+    }
+
+    private fun updateBatteryService() {
+        // TODO: update service with new values
     }
 
 }

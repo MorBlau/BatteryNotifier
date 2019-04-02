@@ -6,4 +6,5 @@
     <color name="colorOff">#D81B60</color>
     <color name="colorOn">#1BD860</color>
     <color name="colorStateUnknown">#BBBBBB</color>
+    <color name="colorStickyNotification">#77DD88</color>
 </resources>

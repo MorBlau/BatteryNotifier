@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.View
 import android.widget.AdapterView
 import com.mblau.batterynotifier.Constants
-import com.mblau.batterynotifier.NotificationFactory
 import com.mblau.batterynotifier.SharedPreferencesRepository
 import com.mblau.batterynotifier.logging.LoggerFactory
 import com.mblau.batterynotifier.model.MySpinner

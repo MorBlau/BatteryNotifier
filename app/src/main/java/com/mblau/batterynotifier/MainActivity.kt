@@ -7,40 +7,30 @@ import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
 import android.content.Intent
-import com.mblau.batterynotifier.Constants.MAX_HIGH_BATTERY
-import com.mblau.batterynotifier.Constants.MAX_LOW_BATTERY
-import com.mblau.batterynotifier.Constants.MIN_HIGH_BATTERY
-import com.mblau.batterynotifier.Constants.MIN_LOW_BATTERY
-import com.mblau.batterynotifier.Constants.VALUE_OFF
-import com.mblau.batterynotifier.Constants.STEP
+import android.support.v4.content.ContextCompat
+import android.support.v7.view.ActionMode
+import android.util.Log
 import com.mblau.batterynotifier.listener.FabClickListener
 import com.mblau.batterynotifier.listener.SharedPreferencesChangeListener
-import com.mblau.batterynotifier.logging.LoggerFactory.getLogger
 import com.mblau.batterynotifier.model.MySpinner
 import com.mblau.batterynotifier.model.SpinnerType
 
+private const val TAG = "Main"
+
 class MainActivity : AppCompatActivity() {
 
-    private val logger = getLogger(this.javaClass)
-
     private val sharedPreferencesRepository = SharedPreferencesRepository
-    private val sharedPreferencesChangeListener = SharedPreferencesChangeListener()
+    private val sharedPreferencesChangeListener = SharedPreferencesChangeListener(this)
     private lateinit var fabClickedListener: FabClickListener
     private lateinit var lowBatterySpinner: MySpinner
     private lateinit var highBatterySpinner: MySpinner
 
-    private val highBatterySpinnerMap: HashMap<String, Int> = HashMap()
-    private val lowBatterySpinnerMap: HashMap<String, Int> = HashMap()
-    private val lowBatterySpinnerLabels = mutableListOf<String>()
-    private val highBatterySpinnerLabels = mutableListOf<String>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sharedPreferencesRepository.initialize(this)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        sharedPreferencesRepository.initialize(this)
-        fabClickedListener = FabClickListener(this)
-        fab.setOnClickListener(fabClickedListener)
+        setFab()
         populateSpinners()
         sharedPreferencesRepository.registerChangeListener(sharedPreferencesChangeListener)
     }
@@ -64,32 +54,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setFab() {
+        val fabColorId = if (SharedPreferencesRepository.isServiceActive() and SharedPreferencesRepository.isAnyServiceEnabled())
+            R.color.colorOn else R.color.colorOff
+        getColor(R.color.colorOff)
+        setFabColor(fabColorId)
+        fabClickedListener = FabClickListener()
+        fab.setOnClickListener(fabClickedListener)
+    }
+
+    fun setFabColor(colorId: Int) {
+        fab.supportBackgroundTintList = ContextCompat.getColorStateList(this, colorId)
+    }
+
     private fun openAboutScreen() {
-        logger.config("Opening about screen")
+        Log.d(TAG, "Opening about screen")
         val intent = Intent(this, AboutActivity::class.java)
         startActivity(intent)
     }
 
     private fun populateSpinners() {
-        logger.config("Populating spinners")
-        fun setSpinnerData(spinnerMap: HashMap<String, Int>, spinnerLabels: MutableList<String>, spinnerValues: MutableList<Int>) {
-            for (value in spinnerValues) {
-                val label = if (value > VALUE_OFF ) ("$value%") else resources.getString(R.string.label_off)
-                spinnerLabels.add(label)
-                spinnerMap[label] = value
-            }
-        }
+        Log.d(TAG, "Populating spinners")
 
-        val lowSpinnerValues = mutableListOf(0)
-        for (value in MIN_LOW_BATTERY..MAX_LOW_BATTERY step STEP) lowSpinnerValues.add(value)
-        setSpinnerData(lowBatterySpinnerMap, lowBatterySpinnerLabels, lowSpinnerValues)
-
-        val highSpinnerValues = mutableListOf(0)
-        for (value in MIN_HIGH_BATTERY..MAX_HIGH_BATTERY step STEP) highSpinnerValues.add(value)
-        setSpinnerData(highBatterySpinnerMap, highBatterySpinnerLabels, highSpinnerValues)
-
-        lowBatterySpinner = MySpinner(this, SpinnerType.LOW_BATTERY, lowBatterySpinnerMap, lowBatterySpinnerLabels, R.id.lowBatterySpinner)
-        highBatterySpinner = MySpinner(this, SpinnerType.HIGH_BATTERY, highBatterySpinnerMap, highBatterySpinnerLabels, R.id.highBatterySpinner)
+        lowBatterySpinner = MySpinner(this, SpinnerType.LOW_BATTERY, R.id.lowBatterySpinner, Constants.MIN_LOW_BATTERY, Constants.MAX_LOW_BATTERY)
+        highBatterySpinner = MySpinner(this, SpinnerType.HIGH_BATTERY, R.id.highBatterySpinner, Constants.MIN_HIGH_BATTERY, Constants.MAX_HIGH_BATTERY)
     }
 
 }

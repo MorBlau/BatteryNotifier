@@ -15,7 +15,7 @@ object SharedPreferencesRepository {
     private lateinit var sharedPreferences: SharedPreferences
 
     fun initialize(context: Context) {
-        sharedPreferences = context.getSharedPreferences(BATTERY_NOTIFIER_PREFS,Context.MODE_PRIVATE)
+        sharedPreferences = context.getSharedPreferences(BATTERY_NOTIFIER_PREFS, Context.MODE_PRIVATE)
     }
 
     fun getLowBatteryThreshold(): Int {
@@ -50,8 +50,12 @@ object SharedPreferencesRepository {
             .apply()
     }
 
+    fun isAnyServiceEnabled(): Boolean {
+        return isLowBatteryServiceEnabled() or isHighBatteryServiceEnabled()
+    }
+
     fun getNotificationSound(): String {
-        return sharedPreferences.getString(NOTIFICATION_SOUND,"DEFAULT")
+        return sharedPreferences.getString(NOTIFICATION_SOUND, "DEFAULT")
     }
 
     fun updateServiceEnabled(enabled: Boolean) {
@@ -60,7 +64,7 @@ object SharedPreferencesRepository {
             .apply()
     }
 
-    fun isServiceEnabled(): Boolean {
+    fun isServiceActive(): Boolean {
         return sharedPreferences.getBoolean(SERVICE_ENABLED, false)
     }
 
