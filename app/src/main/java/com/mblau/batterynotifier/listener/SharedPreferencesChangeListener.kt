@@ -15,8 +15,8 @@ class SharedPreferencesChangeListener(private val context: MainActivity) :
     override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String?) {
         when (key) {
             SharedPreferencesRepository.SERVICE_ENABLED -> onServiceEnabledChanged()
-            SharedPreferencesRepository.HIGH_BATTERY_THRESHOLD -> onHighBatteryThresholdChanged()
-            SharedPreferencesRepository.LOW_BATTERY_THRESHOLD -> onLowBatteryThresholdChanged()
+            SharedPreferencesRepository.HIGH_BATTERY_THRESHOLD,
+            SharedPreferencesRepository.LOW_BATTERY_THRESHOLD -> onBatteryThresholdChanged()
             SharedPreferencesRepository.NOTIFICATION_SOUND -> onNotificationSoundChanged()
         }
     }
@@ -42,20 +42,10 @@ class SharedPreferencesChangeListener(private val context: MainActivity) :
         }
     }
 
-    private fun onHighBatteryThresholdChanged() {
-        val highBatteryThreshold = SharedPreferencesRepository.getHighBatteryThreshold()
+    private fun onBatteryThresholdChanged() {
         when {
-            (highBatteryThreshold == VALUE_OFF) and (!SharedPreferencesRepository.isLowBatteryServiceEnabled()) ->
-                stopBatteryService() // all services are disabled, shut down service
+            !SharedPreferencesRepository.isAnyServiceEnabled() -> stopBatteryService()
             SharedPreferencesRepository.isServiceActive() -> updateBatteryService()
-        }
-    }
-
-    private fun onLowBatteryThresholdChanged() {
-        val lowBatteryThreshold = SharedPreferencesRepository.getLowBatteryThreshold()
-        when (lowBatteryThreshold) {
-            VALUE_OFF -> true //TODO("turn off low battery service/listener or destroy service if needed")
-            else -> true //TODO("if service is running, update service with new value)")
         }
     }
 
