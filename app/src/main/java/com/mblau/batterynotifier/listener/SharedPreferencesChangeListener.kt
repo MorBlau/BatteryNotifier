@@ -25,9 +25,7 @@ class SharedPreferencesChangeListener(private val context: MainActivity) :
         Log.d(TAG, "onServiceEnabledChanged called.")
 
         val serviceEnabled = SharedPreferencesRepository.isServiceActive()
-        val color = context.resources.getColor(
-            if (serviceEnabled) R.color.colorOn else R.color.colorOff,
-            context.theme)
+        val colorId = if (serviceEnabled) R.color.colorOn else R.color.colorOff
         val smallText = "Hello world!!!"
         val bigText =
             "$smallText\n" +
@@ -35,7 +33,7 @@ class SharedPreferencesChangeListener(private val context: MainActivity) :
                     "High battery threshold: ${SharedPreferencesRepository.getHighBatteryThreshold()}.\n" +
                     "Low battery threshold: ${SharedPreferencesRepository.getLowBatteryThreshold()}."
 
-        myNotificationManager.notify(context, color, smallText, bigText)
+        myNotificationManager.notify(context, colorId, smallText, bigText)
 
         Log.d(TAG, "onServiceEnabledChanged service enabled: $serviceEnabled.")
         when {

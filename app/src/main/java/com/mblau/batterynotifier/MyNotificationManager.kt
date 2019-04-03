@@ -1,5 +1,6 @@
 package com.mblau.batterynotifier
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -21,13 +22,14 @@ private const val STICKY_NOTIFICATION_NAME = "BATTERY_NOTIFIER_STICKY"
 
 class MyNotificationManager {
 
-    fun notify(context: Context, color: Int, smallText: String, bigText: String = smallText) {
+    fun notify(context: Context, colorId: Int, smallText: String, bigText: String = smallText) {
 
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
         val channelDescription = context.getString(R.string.channel_description_alert)
+        val color = context.resources.getColor(colorId, context.theme)
         var builder = NotificationCompat.Builder(context, ALERT_NOTIFICATION_STRING)
             .setSmallIcon(R.drawable.ic_skylight_notification)
             .setContentTitle(TITLE)
@@ -48,7 +50,7 @@ class MyNotificationManager {
 
     }
 
-    fun stickyNotify(context: Context, color: Int, smallText: String, bigText: String = smallText) {
+    fun getStickyNotification(context: Context, colorId: Int, smallText: String, bigText: String = smallText): Notification {
 
 
         val intent = Intent(context, MainActivity::class.java).apply {
@@ -56,26 +58,24 @@ class MyNotificationManager {
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 
-
+        val action: NotificationCompat.Action = NotificationCompat.Action(R.drawable.navigation_empty_icon, "hello", pendingIntent)
         val channelDescription = context.getString(R.string.channel_description_sticky)
+        val color = context.resources.getColor(colorId, context.theme)
         var builder = NotificationCompat.Builder(context, STICKY_NOTIFICATION_STRING)
             .setSmallIcon(R.drawable.ic_skylight_notification)
             .setContentTitle(TITLE)
             .setColor(color)
-            .setColorized(true)
             .setContentText(smallText)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setAutoCancel(true)
+            .addAction(action)
 
         if (bigText != smallText) builder.setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
 
         createNotificationChannel(context, STICKY_NOTIFICATION_STRING, STICKY_NOTIFICATION_NAME, channelDescription, NotificationManager.IMPORTANCE_LOW)
 
-        with(NotificationManagerCompat.from(context)) {
-            // notificationId is a unique int for each notification that you must define
-            notify(STICKY_NOTIFICATION_ID, builder.build())
-        }
+        return builder.build()
 
     }
 
@@ -83,9 +83,6 @@ class MyNotificationManager {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val name = context.getString(R.string.channel_name)
-//            val descriptionText = context.getString(R.string.channel_description)
-//            val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(channelId, channelName, importance).apply {
                 description = channelDescription
             }
