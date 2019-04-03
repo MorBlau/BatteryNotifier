@@ -15,10 +15,10 @@ const val TITLE = "Battery Notifier"
 
 private const val ALERT_NOTIFICATION_ID = 23487
 private const val ALERT_NOTIFICATION_STRING = "23487"
-private const val ALERT_NOTIFICATION_NAME = "BATTERY_NOTIFIER_ALERT"
+private const val ALERT_NOTIFICATION_NAME = "Alert Notifications"
 private const val STICKY_NOTIFICATION_ID = 30987
 private const val STICKY_NOTIFICATION_STRING = "30987"
-private const val STICKY_NOTIFICATION_NAME = "BATTERY_NOTIFIER_STICKY"
+private const val STICKY_NOTIFICATION_NAME = "Service Notification"
 
 class MyNotificationManager {
 
@@ -41,7 +41,8 @@ class MyNotificationManager {
 
         if (bigText != smallText) builder.setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
 
-        createNotificationChannel(context, ALERT_NOTIFICATION_STRING, ALERT_NOTIFICATION_NAME, channelDescription, NotificationManager.IMPORTANCE_DEFAULT)
+        createNotificationChannel(context, ALERT_NOTIFICATION_STRING, ALERT_NOTIFICATION_NAME,
+            channelDescription, NotificationManager.IMPORTANCE_DEFAULT, true)
 
         with(NotificationManagerCompat.from(context)) {
             // notificationId is a unique int for each notification that you must define
@@ -77,19 +78,20 @@ class MyNotificationManager {
             .addAction(action)
 
         if (bigText != smallText) builder.setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
-
-        createNotificationChannel(context, STICKY_NOTIFICATION_STRING, STICKY_NOTIFICATION_NAME, channelDescription, NotificationManager.IMPORTANCE_LOW)
+        createNotificationChannel(context, STICKY_NOTIFICATION_STRING, STICKY_NOTIFICATION_NAME,
+            channelDescription, NotificationManager.IMPORTANCE_MIN, false)
 
         return builder.build()
 
     }
 
-    private fun createNotificationChannel(context: Context, channelId: String, channelName: String, channelDescription: String, importance: Int) {
+    private fun createNotificationChannel(context: Context, channelId: String, channelName: String, channelDescription: String, importance: Int, withSound: Boolean) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(channelId, channelName, importance).apply {
                 description = channelDescription
+                if (!withSound) setSound(null, null)
             }
             // Register the channel with the system
             val notificationManager: NotificationManager =
