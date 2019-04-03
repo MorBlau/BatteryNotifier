@@ -13,5 +13,6 @@
     <string name="sticky_text_collapsed">Battery Notifier is running in the background.</string>
     <string name="sticky_text_expanded">Battery Notifier is running in the background.\n
         Open the app to change settings.</string>
+    <string name="sticky_button">Open</string>
 
 </resources>

@@ -30,7 +30,7 @@ class MyNotificationManager {
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
         val channelDescription = context.getString(R.string.channel_description_alert)
         val color = context.resources.getColor(colorId, context.theme)
-        var builder = NotificationCompat.Builder(context, ALERT_NOTIFICATION_STRING)
+        val builder = NotificationCompat.Builder(context, ALERT_NOTIFICATION_STRING)
             .setSmallIcon(R.drawable.ic_skylight_notification)
             .setContentTitle(TITLE)
             .setColor(color)
@@ -52,21 +52,26 @@ class MyNotificationManager {
 
     fun getStickyNotification(context: Context, colorId: Int, smallText: String, bigText: String = smallText): Notification {
 
+        // clicking on notification itself will do nothing
+        val emptyPendingIntent = PendingIntent.getActivity(context, 0, Intent(), 0)
 
+        // clicking on button will open app
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+        val buttonPendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 
-        val action: NotificationCompat.Action = NotificationCompat.Action(R.drawable.navigation_empty_icon, "hello", pendingIntent)
+        val buttonText = context.getString(R.string.sticky_button)
+        val action: NotificationCompat.Action = NotificationCompat.Action(R.drawable.navigation_empty_icon, buttonText, buttonPendingIntent)
         val channelDescription = context.getString(R.string.channel_description_sticky)
         val color = context.resources.getColor(colorId, context.theme)
-        var builder = NotificationCompat.Builder(context, STICKY_NOTIFICATION_STRING)
+        val builder = NotificationCompat.Builder(context, STICKY_NOTIFICATION_STRING)
             .setSmallIcon(R.drawable.ic_skylight_notification)
             .setContentTitle(TITLE)
             .setColor(color)
+            .setColorized(true)
             .setContentText(smallText)
-            .setContentIntent(pendingIntent)
+            .setContentIntent(emptyPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setAutoCancel(true)
             .addAction(action)
