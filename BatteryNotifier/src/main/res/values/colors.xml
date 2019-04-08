@@ -7,5 +7,8 @@
     <color name="colorOff">#E91E63</color>
     <color name="colorOn">#4CAF50</color>
 
+    <color name="colorHigh">#03EB10</color>
+    <color name="colorLow">#FF0812</color>
+
     <color name="colorStickyNotification">#3F51B5</color>
 </resources>
