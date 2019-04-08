@@ -19,8 +19,12 @@ class CheckBatteryTask(private val context: CheckBatteryService,
         val didNotify = dataConfig.didNotify
         val hasValuePassedThreshold = dataConfig.hasValuePassedThreshold(batteryPercent, batteryThreshold)
         val chargingStateVerified = dataConfig.verifyChargingState(chargingState)
+        if (!chargingStateVerified) {
+            context.restartTimer(chargingState.getOther())
+            return
+        }
 
-        if (hasValuePassedThreshold and chargingStateVerified and !didNotify) {
+        if (hasValuePassedThreshold and !didNotify) {
             Log.d(TAG, "Threshold passed! Threshold: $batteryThreshold, event: $eventType")
             MyNotificationManager.notify(context, dataConfig, batteryThreshold)
 

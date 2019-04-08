@@ -1,7 +1,6 @@
 package com.mblau.batterynotifier.service
 
 import android.app.*
-import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.Context
 import android.content.Intent.ACTION_POWER_CONNECTED
@@ -9,8 +8,8 @@ import android.content.Intent.ACTION_POWER_DISCONNECTED
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.IBinder
+import android.text.format.DateUtils
 import android.util.Log
-import com.mblau.batterynotifier.util.Constants
 import com.mblau.batterynotifier.manager.MyNotificationManager
 import com.mblau.batterynotifier.R
 import com.mblau.batterynotifier.task.CheckBatteryTaskConfig
@@ -61,8 +60,8 @@ class CheckBatteryService : Service() {
         Log.d(TAG, "Starting task timer.")
         timer?.cancel()
         timer = Timer()
-        val now = Date()
-        timer!!.scheduleAtFixedRate(checkBatteryTask, now, state.period)
+        val startTime = Date(Date().time + (5 * DateUtils.SECOND_IN_MILLIS)) // five seconds in the future
+        timer!!.scheduleAtFixedRate(checkBatteryTask, startTime, state.period)
     }
 
     fun handleChangedChargeState(isCharging: Boolean) {
@@ -72,8 +71,6 @@ class CheckBatteryService : Service() {
 
     fun restartTimer(state: ChargingState) {
         Log.d(TAG, "Restarting task timer.")
-        // sleep for one second to make sure charge state is as expected
-        Thread.sleep(1000)
         createNewBatteryTask(state)
         startTimer(state)
     }
