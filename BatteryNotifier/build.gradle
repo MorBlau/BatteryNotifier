@@ -10,10 +10,22 @@ android {
         applicationId "com.mblau.batterynotifier"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def separator = "-"
+            def buildType = variant.variantData.variantConfiguration.buildType.name
+            def version = variant.versionName
+
+            def newApkName = getArchivesBaseName() + separator + buildType + separator + version + ".apk"
+
+            outputFileName = new File(newApkName)
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
