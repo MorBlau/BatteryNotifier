@@ -1,4 +1,6 @@
-package com.mblau.batterynotifier
+package com.mblau.batterynotifier.util
+
+import android.text.format.DateUtils
 
 object Constants {
 
@@ -7,6 +9,9 @@ object Constants {
     const val MIN_HIGH_BATTERY = 55
     const val MAX_HIGH_BATTERY = 90
     const val STEP = 5
+
+    const val PERIOD_CHARGING = DateUtils.MINUTE_IN_MILLIS * 15
+    const val PERIOD_NOT_CHARGING = DateUtils.SECOND_IN_MILLIS * 30
 
     const val VALUE_OFF = 0
 }

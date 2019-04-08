@@ -3,12 +3,12 @@ package com.mblau.batterynotifier.model
 import android.support.v7.app.AppCompatActivity
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import com.mblau.batterynotifier.Constants
+import com.mblau.batterynotifier.util.Constants
 import com.mblau.batterynotifier.R
-import com.mblau.batterynotifier.SharedPreferencesRepository
+import com.mblau.batterynotifier.dao.SharedPreferencesRepository
 import com.mblau.batterynotifier.listener.UserSelectionListener
 
-data class MySpinner(private val context: AppCompatActivity, val type: SpinnerType, private val spinnerId: Int, val minValue: Int, val maxValue: Int) {
+data class MySpinner(private val context: AppCompatActivity, val type: EventType, private val spinnerId: Int, val minValue: Int, val maxValue: Int) {
 
     private var adapter: ArrayAdapter<String>
     private var spinner: Spinner = context.findViewById(spinnerId)
@@ -41,8 +41,8 @@ data class MySpinner(private val context: AppCompatActivity, val type: SpinnerTy
 
     private fun setSelection() {
         val savedValue = when (type) {
-            SpinnerType.HIGH_BATTERY -> SharedPreferencesRepository.getHighBatteryThreshold()
-                SpinnerType.LOW_BATTERY -> SharedPreferencesRepository.getLowBatteryThreshold()
+            EventType.HIGH_BATTERY -> SharedPreferencesRepository.getHighBatteryThreshold()
+                EventType.LOW_BATTERY -> SharedPreferencesRepository.getLowBatteryThreshold()
         }
         val selection = if (spinnerValues.contains(savedValue)) spinnerValues.indexOf(savedValue) else 0
         spinner.setSelection(selection)

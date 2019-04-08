@@ -1,4 +1,4 @@
-package com.mblau.batterynotifier
+package com.mblau.batterynotifier.dao
 
 import android.content.Context
 
@@ -7,7 +7,7 @@ import android.content.SharedPreferences
 object SharedPreferencesRepository {
 
     private const val BATTERY_NOTIFIER_PREFS = "batteryNotifierPrefs"
-    const val SERVICE_ENABLED = "serviceEnabled"
+    const val SERVICE_ACTIVE = "serviceActive"
     const val LOW_BATTERY_THRESHOLD = "lowBatteryThreshold"
     const val HIGH_BATTERY_THRESHOLD = "highBatteryThreshold"
     const val NOTIFICATION_SOUND = "notificationSound"
@@ -58,14 +58,14 @@ object SharedPreferencesRepository {
         return sharedPreferences.getString(NOTIFICATION_SOUND, "DEFAULT")
     }
 
-    fun updateServiceEnabled(enabled: Boolean) {
+    fun updateServiceActive(active: Boolean) {
         sharedPreferences.edit()
-            .putBoolean(SERVICE_ENABLED, enabled)
+            .putBoolean(SERVICE_ACTIVE, active)
             .apply()
     }
 
     fun isServiceActive(): Boolean {
-        return sharedPreferences.getBoolean(SERVICE_ENABLED, false)
+        return sharedPreferences.getBoolean(SERVICE_ACTIVE, false)
     }
 
 }

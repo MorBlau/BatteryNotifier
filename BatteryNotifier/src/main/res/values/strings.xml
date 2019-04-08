@@ -10,9 +10,14 @@
     <string name="low_battery">Low battery level threshold:</string>
     <string name="high_battery">High battery level threshold:</string>
     <string name="label_off">Off</string>
+
     <string name="sticky_text_collapsed">Battery Notifier is running in the background.</string>
-    <string name="sticky_text_expanded">Battery Notifier is running in the background.\n
-        Open the app to change settings.</string>
+    <string name="sticky_text_expanded">Battery Notifier is running in the background.\nOpen the app to change settings.</string>
+    <string name="notify_high_collapsed">Battery level is above %d</string>
+    <string name="notify_high_expanded">Battery level is above %d\nPlease disconnect phone from charger</string>
+    <string name="notify_low_collapsed">Battery level is below %d</string>
+    <string name="notify_low_expanded">Battery level is below %d\nPlease connect phone to charger</string>
+
     <string name="sticky_button">Open</string>
 
 </resources>

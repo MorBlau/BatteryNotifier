@@ -2,7 +2,7 @@ package com.mblau.batterynotifier.listener
 
 import android.util.Log
 import android.view.View
-import com.mblau.batterynotifier.SharedPreferencesRepository
+import com.mblau.batterynotifier.dao.SharedPreferencesRepository
 
 class FabClickListener : View.OnClickListener {
 
@@ -17,8 +17,8 @@ class FabClickListener : View.OnClickListener {
 
     fun handleChangeServiceState(isEnabled: Boolean) {
         when {
-            isEnabled -> SharedPreferencesRepository.updateServiceEnabled(false)
-            SharedPreferencesRepository.isAnyServiceEnabled() -> SharedPreferencesRepository.updateServiceEnabled(true)
+            isEnabled -> SharedPreferencesRepository.updateServiceActive(false)
+            SharedPreferencesRepository.isAnyServiceEnabled() -> SharedPreferencesRepository.updateServiceActive(true)
         }
     }
 

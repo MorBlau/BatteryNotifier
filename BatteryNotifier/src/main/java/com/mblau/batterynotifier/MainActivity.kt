@@ -8,12 +8,14 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import android.content.Intent
 import android.support.v4.content.ContextCompat
-import android.support.v7.view.ActionMode
 import android.util.Log
+import com.mblau.batterynotifier.dao.SharedPreferencesRepository
 import com.mblau.batterynotifier.listener.FabClickListener
 import com.mblau.batterynotifier.listener.SharedPreferencesChangeListener
 import com.mblau.batterynotifier.model.MySpinner
-import com.mblau.batterynotifier.model.SpinnerType
+import com.mblau.batterynotifier.model.EventType
+import com.mblau.batterynotifier.service.CheckBatteryService
+import com.mblau.batterynotifier.util.Constants
 
 private const val TAG = "Main"
 
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedPreferencesRepository.initialize(this)
+        syncServiceState()
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setFab()
@@ -54,6 +57,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun syncServiceState() {
+        // if service is not running, but in preferences is saved as running, we will turn it off
+        if (!CheckBatteryService.isRunning() and SharedPreferencesRepository.isServiceActive())
+            SharedPreferencesRepository.updateServiceActive(false)
+    }
+
     private fun setFab() {
         val fabColorId = if (SharedPreferencesRepository.isServiceActive() and SharedPreferencesRepository.isAnyServiceEnabled())
             R.color.colorOn else R.color.colorOff
@@ -76,8 +85,8 @@ class MainActivity : AppCompatActivity() {
     private fun populateSpinners() {
         Log.d(TAG, "Populating spinners")
 
-        lowBatterySpinner = MySpinner(this, SpinnerType.LOW_BATTERY, R.id.lowBatterySpinner, Constants.MIN_LOW_BATTERY, Constants.MAX_LOW_BATTERY)
-        highBatterySpinner = MySpinner(this, SpinnerType.HIGH_BATTERY, R.id.highBatterySpinner, Constants.MIN_HIGH_BATTERY, Constants.MAX_HIGH_BATTERY)
+        lowBatterySpinner = MySpinner(this, EventType.LOW_BATTERY, R.id.lowBatterySpinner, Constants.MIN_LOW_BATTERY, Constants.MAX_LOW_BATTERY)
+        highBatterySpinner = MySpinner(this, EventType.HIGH_BATTERY, R.id.highBatterySpinner, Constants.MIN_HIGH_BATTERY, Constants.MAX_HIGH_BATTERY)
     }
 
 }
