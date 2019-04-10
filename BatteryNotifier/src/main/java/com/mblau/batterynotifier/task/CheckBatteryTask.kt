@@ -24,10 +24,10 @@ class CheckBatteryTask(private val context: CheckBatteryService,
             return
         }
 
+        Log.d(TAG, "hasValuePassedThreshold: $hasValuePassedThreshold, didNotify: $didNotify")
         if (hasValuePassedThreshold and !didNotify) {
             Log.d(TAG, "Threshold passed! Threshold: $batteryThreshold, event: $eventType")
             MyNotificationManager.notify(context, dataConfig, batteryThreshold)
-
             Log.d(TAG, "Cancelling task.")
             this.cancel()
         }

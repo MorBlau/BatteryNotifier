@@ -60,26 +60,27 @@ class CheckBatteryService : Service() {
         Log.d(TAG, "Starting task timer.")
         timer?.cancel()
         timer = Timer()
-        val startTime = Date(Date().time + (5 * DateUtils.SECOND_IN_MILLIS)) // five seconds in the future
+        val startTime = Date(Date().time + DateUtils.SECOND_IN_MILLIS) // one second in the future
         timer!!.scheduleAtFixedRate(checkBatteryTask, startTime, state.period)
     }
 
-    fun handleChangedChargeState(isCharging: Boolean) {
+    fun handleChangedChargeState() {
         val chargingState = checkChargingState()
         restartTimer(chargingState)
     }
 
     fun restartTimer(state: ChargingState) {
         Log.d(TAG, "Restarting task timer.")
+        myNotificationManager.removeNotification(this)
         createNewBatteryTask(state)
         startTimer(state)
     }
 
     private fun createNewBatteryTask(state: ChargingState) {
+        val config = checkBatteryTaskDataMap[state]!!
+        config.didNotify = false
         checkBatteryTask?.cancel()
-        checkBatteryTask = CheckBatteryTask(this,
-            checkBatteryTaskDataMap[state]!!
-        )
+        checkBatteryTask = CheckBatteryTask(this, config)
     }
 
     private fun registerReceivers() {
@@ -96,20 +97,6 @@ class CheckBatteryService : Service() {
         Log.d(TAG, "unregisterReceivers called.")
         this.unregisterReceiver(batteryChargeStateReceiver)
         batteryChargeStateReceiver = null
-    }
-
-    fun startedCharging() {
-        Log.d(TAG, "startedCharging called.")
-        myNotificationManager.removeNotification(this)
-        lowCheckBatteryTaskData.didNotify = false
-        restartTimer(ChargingState.CHARGING)
-    }
-
-    fun stoppedCharging() {
-        Log.d(TAG, "stoppedCharging called.")
-        myNotificationManager.removeNotification(this)
-        highCheckBatteryTaskData.didNotify = false
-        restartTimer(ChargingState.NOT_CHARGING)
     }
 
     fun checkChargingStateAndBatteryPercent(): Pair<ChargingState, Int> {
@@ -154,10 +141,10 @@ class CheckBatteryService : Service() {
 
         fun stop(context: Context) {
             Log.d(TAG, "stop called.")
+            MyNotificationManager.removeNotification(context)
             val intent = Intent(context, CheckBatteryService::class.java)
             context.stopService(intent)
             instance = null
-            MyNotificationManager.removeNotification(context)
         }
 
         fun restart(context: Context) {
