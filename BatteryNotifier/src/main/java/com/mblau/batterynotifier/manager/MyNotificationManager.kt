@@ -111,7 +111,7 @@ object MyNotificationManager {
         val channelDescription = context.getString(R.string.channel_description_sticky)
         val color = context.resources.getColor(colorId, context.theme)
         val builder = NotificationCompat.Builder(context, STICKY_NOTIFICATION_STRING)
-            .setSmallIcon(R.drawable.ic_skylight_notification)
+            .setSmallIcon(R.drawable.ic_battery_service_icon)
             .setContentTitle(TITLE)
             .setColor(color)
             .setColorized(true)
