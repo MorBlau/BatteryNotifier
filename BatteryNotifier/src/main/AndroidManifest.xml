@@ -15,6 +15,19 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
             </intent-filter>
         </receiver>
+        <receiver
+                android:name=".receiver.SystemEventReceiver"
+                android:enabled="true"
+                android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" android:path="com.mblau.batterynotifier" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".receiver.NotificationButtonReceiver">
             <intent-filter>
                 <action android:name="com.mblau.batterynotifier.action.ACTION_SNOOZE"/>
