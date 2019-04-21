@@ -13,5 +13,8 @@ object Constants {
     const val PERIOD_CHARGING = DateUtils.MINUTE_IN_MILLIS * 15
     const val PERIOD_NOT_CHARGING = DateUtils.SECOND_IN_MILLIS * 30
 
+    const val DELAY_CHARGING = DateUtils.SECOND_IN_MILLIS * 5
+    const val DELAY_NOT_CHARGING = DateUtils.SECOND_IN_MILLIS
+
     const val VALUE_OFF = 0
 }

@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.mblau.batterynotifier.manager.MyNotificationManager
+import com.mblau.batterynotifier.model.ChargingState
 import com.mblau.batterynotifier.service.CheckBatteryService
 
 
@@ -24,9 +24,8 @@ class BatteryChargeStateReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "onReceive called.")
         when (intent.action) {
-            Intent.ACTION_POWER_CONNECTED, Intent.ACTION_POWER_DISCONNECTED -> {
-                checkBatteryService?.handleChangedChargeState()
-            }
+            Intent.ACTION_POWER_CONNECTED -> checkBatteryService?.handleChangedChargeState(ChargingState.CHARGING)
+            Intent.ACTION_POWER_DISCONNECTED -> checkBatteryService?.handleChangedChargeState(ChargingState.NOT_CHARGING)
             else -> {
                 Log.d(TAG, "Wrong intent, aborting.")
             }

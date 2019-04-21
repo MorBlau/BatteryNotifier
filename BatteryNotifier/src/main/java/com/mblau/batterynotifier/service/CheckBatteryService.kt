@@ -60,12 +60,11 @@ class CheckBatteryService : Service() {
         Log.d(TAG, "Starting task timer.")
         timer?.cancel()
         timer = Timer()
-        val startTime = Date(Date().time + DateUtils.SECOND_IN_MILLIS) // one second in the future
+        val startTime = Date(Date().time + state.delay)
         timer!!.scheduleAtFixedRate(checkBatteryTask, startTime, state.period)
     }
 
-    fun handleChangedChargeState() {
-        val chargingState = checkChargingState()
+    fun handleChangedChargeState(chargingState: ChargingState) {
         restartTimer(chargingState)
     }
 
