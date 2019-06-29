@@ -4,13 +4,13 @@ import android.util.Log
 import android.view.View
 import com.mblau.batterynotifier.dao.SharedPreferencesRepository
 
-class FabClickListener : View.OnClickListener {
+class FloatingActionButtonClickListener : View.OnClickListener {
 
-    private val TAG = "FabClickListener"
+    private val TAG = "FABClickListener"
 
     override fun onClick(view: View?) {
         // action to perform when clicking on floating action button
-        Log.d(TAG, "fab was clicked!")
+        Log.d(TAG, "Floating action button was clicked!")
         val isEnabled = SharedPreferencesRepository.isServiceActive()
         handleChangeServiceState(isEnabled)
     }

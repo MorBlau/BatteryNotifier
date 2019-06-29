@@ -10,7 +10,7 @@ import android.content.Intent
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.mblau.batterynotifier.dao.SharedPreferencesRepository
-import com.mblau.batterynotifier.listener.FabClickListener
+import com.mblau.batterynotifier.listener.FloatingActionButtonClickListener
 import com.mblau.batterynotifier.listener.SharedPreferencesChangeListener
 import com.mblau.batterynotifier.model.MySpinner
 import com.mblau.batterynotifier.model.EventType
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private val sharedPreferencesRepository = SharedPreferencesRepository
     private val sharedPreferencesChangeListener = SharedPreferencesChangeListener(this)
-    private lateinit var fabClickedListener: FabClickListener
+    private lateinit var floatingActionButtonClickListener: FloatingActionButtonClickListener
     private lateinit var lowBatterySpinner: MySpinner
     private lateinit var highBatterySpinner: MySpinner
 
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         syncServiceState()
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        setFab()
+        setFloatingActionButton()
         populateSpinners()
         sharedPreferencesRepository.registerChangeListener(sharedPreferencesChangeListener)
     }
@@ -63,17 +63,19 @@ class MainActivity : AppCompatActivity() {
             SharedPreferencesRepository.updateServiceActive(false)
     }
 
-    private fun setFab() {
-        val fabColorId = if (SharedPreferencesRepository.isServiceActive() and SharedPreferencesRepository.isAnyServiceEnabled())
-            R.color.colorOn else R.color.colorOff
-        getColor(R.color.colorOff)
-        setFabColor(fabColorId)
-        fabClickedListener = FabClickListener()
-        fab.setOnClickListener(fabClickedListener)
+    private fun setFloatingActionButton() {
+        val floatingActionButtonColorId =
+            if (SharedPreferencesRepository.isServiceActive() and SharedPreferencesRepository.isAnyServiceEnabled())
+                R.color.colorOn
+            else
+                R.color.colorOff
+        setFloatingActionButtonColor(floatingActionButtonColorId)
+        floatingActionButtonClickListener = FloatingActionButtonClickListener()
+        floatingActionButton.setOnClickListener(floatingActionButtonClickListener)
     }
 
-    fun setFabColor(colorId: Int) {
-        fab.supportBackgroundTintList = ContextCompat.getColorStateList(this, colorId)
+    fun setFloatingActionButtonColor(colorId: Int) {
+        floatingActionButton.supportBackgroundTintList = ContextCompat.getColorStateList(this, colorId)
     }
 
     private fun openAboutScreen() {

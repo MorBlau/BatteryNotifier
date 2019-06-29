@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.mblau.batterynotifier.*
 import com.mblau.batterynotifier.dao.SharedPreferencesRepository
-import com.mblau.batterynotifier.manager.MyNotificationManager
 import com.mblau.batterynotifier.service.CheckBatteryService
 
 private const val TAG = "SharedPrefsChangeListen"
@@ -50,13 +49,13 @@ class SharedPreferencesChangeListener(private val context: MainActivity) :
 
     private fun startBatteryService() {
         Log.d(TAG, "startBatteryService called.")
-        context.setFabColor(R.color.colorOn)
+        context.setFloatingActionButtonColor(R.color.colorOn)
         CheckBatteryService.start(context)
     }
 
     private fun stopBatteryService() {
         Log.d(TAG, "stopBatteryService called.")
-        context.setFabColor(R.color.colorOff)
+        context.setFloatingActionButtonColor(R.color.colorOff)
         CheckBatteryService.stop(context)
     }
 
