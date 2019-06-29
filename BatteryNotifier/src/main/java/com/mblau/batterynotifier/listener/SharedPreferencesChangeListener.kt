@@ -43,8 +43,10 @@ class SharedPreferencesChangeListener(private val context: MainActivity) :
     }
 
     private fun handleServiceEnabled() {
-        if (SharedPreferencesRepository.isAnyServiceEnabled()) startBatteryService()
-        else return // TODO: add toast - no threshold defined
+        if (SharedPreferencesRepository.isAnyServiceEnabled())
+            startBatteryService()
+        else
+            return // TODO: add toast - no threshold defined
     }
 
     private fun startBatteryService() {

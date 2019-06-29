@@ -18,9 +18,7 @@ class SystemEventReceiver: BroadcastReceiver() {
                 if (SharedPreferencesRepository.isServiceActive())
                 CheckBatteryService.start(context)
             }
-            else -> {
-                Log.d(TAG, "Wrong intent, aborting.")
-            }
+            else -> Log.d(TAG, "Wrong intent, aborting.")
         }
     }
 

@@ -33,7 +33,11 @@ data class MySpinner(private val context: AppCompatActivity, val type: EventType
 
         // Populate spinner labels and map
         for (value in spinnerValues) {
-            val label = if (value > Constants.VALUE_OFF) ("$value%") else context.resources.getString(R.string.label_off)
+            val label =
+                if (value > Constants.VALUE_OFF)
+                    "$value%"
+                else
+                    context.resources.getString(R.string.label_off)
             spinnerLabels.add(label)
             spinnerMap[label] = value
         }
@@ -44,7 +48,10 @@ data class MySpinner(private val context: AppCompatActivity, val type: EventType
             EventType.HIGH_BATTERY -> SharedPreferencesRepository.getHighBatteryThreshold()
                 EventType.LOW_BATTERY -> SharedPreferencesRepository.getLowBatteryThreshold()
         }
-        val selection = if (spinnerValues.contains(savedValue)) spinnerValues.indexOf(savedValue) else 0
+        val selection =
+            if (spinnerValues.contains(savedValue))
+                spinnerValues.indexOf(savedValue)
+            else 0
         spinner.setSelection(selection)
     }
 }
