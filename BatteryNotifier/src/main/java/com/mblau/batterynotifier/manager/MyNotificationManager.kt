@@ -9,10 +9,13 @@ import android.content.Intent
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
+import android.text.format.DateUtils
 import android.util.Log
 import com.mblau.batterynotifier.MainActivity
 import com.mblau.batterynotifier.R
-import com.mblau.batterynotifier.receiver.NotificationButtonReceiver
+import com.mblau.batterynotifier.dao.SharedPreferencesRepository
+import com.mblau.batterynotifier.model.ChargingState
+import com.mblau.batterynotifier.service.SnoozeService
 import com.mblau.batterynotifier.task.CheckBatteryTaskConfig
 
 const val CHANNEL_ID = "mblau.batterynotifier"
@@ -25,8 +28,9 @@ private const val STICKY_NOTIFICATION_ID = 30987
 private const val STICKY_NOTIFICATION_STRING = "30987"
 private const val STICKY_NOTIFICATION_NAME = "Service Notification"
 
-private const val EXTRA_SNOOZE = "com.mblau.batterynotifier.intent.EXTRA_SNOOZE"
-private const val ACTION_SNOOZE = "com.mblau.batterynotifier.action.ACTION_SNOOZE"
+const val EXTRA_SNOOZE_DELAY = "com.mblau.batterynotifier.intent.EXTRA_SNOOZE_DELAY"
+const val EXTRA_SNOOZE_STATE = "com.mblau.batterynotifier.intent.EXTRA_SNOOZE_STATE"
+const val EXTRA_SNOOZE_BATTERY = "com.mblau.batterynotifier.intent.EXTRA_SNOOZE_BATTERY"
 
 object MyNotificationManager {
 
@@ -40,27 +44,15 @@ object MyNotificationManager {
         val smallText = context.getString(data.getSmallTextId(), batteryPercent)
         val bigText = context.getString(data.getBigTextId(), batteryPercent)
 
-        notify(context, colorId, smallText, bigText, 5, 10)
-        data.didNotify = true
-    }
-
-    fun notify(context: Context, colorId: Int, smallText: String, bigText: String = smallText, snoozeTime1: Int, snoozeTime2: Int) {
-
 //        val intentOpenApp = Intent(context, MainActivity::class.java).apply {
 //            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 //        }
 //        val openAppPendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intentOpenApp, 0)
 
-        val snoozeAction1Intent = Intent(context, NotificationButtonReceiver::class.java)
-            .putExtra(EXTRA_SNOOZE, snoozeTime1).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-        val snoozeAction1PendingIntent: PendingIntent = PendingIntent.getActivity(
-            context, 0, snoozeAction1Intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val snoozeAction1Text = "Snooze 5"
-        val snoozeAction1: NotificationCompat.Action = NotificationCompat.Action(R.drawable.navigation_empty_icon, snoozeAction1Text, snoozeAction1PendingIntent)
-
-
+        val snoozeTime1 = SharedPreferencesRepository.getDelayOption1()
+        val snoozeTime2 = SharedPreferencesRepository.getDelayOption2()
+        val snoozeAction1 = createSnoozePendingIntent(context, data.chargingState, batteryPercent, snoozeTime1)
+        val snoozeAction2 = createSnoozePendingIntent(context, data.chargingState, batteryPercent, snoozeTime2)
 
         val channelDescription = context.getString(R.string.channel_description_alert)
         val color = context.resources.getColor(colorId, context.theme)
@@ -73,9 +65,8 @@ object MyNotificationManager {
 //            .setContentIntent(openAppPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        if (snoozeAction1 != null) builder.addAction(snoozeAction1)
-//        if (snoozeAction2 != null) builder.addAction(snoozeAction2)
-//        builder.addAction(dismiss)
+        builder.addAction(snoozeAction1)
+        builder.addAction(snoozeAction2)
 
         if (bigText != smallText) builder.setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
 
@@ -88,7 +79,7 @@ object MyNotificationManager {
             // notificationId is a unique int for each notification that you must define
             notify(ALERT_NOTIFICATION_ID, builder.build())
         }
-
+        data.didNotify = true
     }
 
     fun removeNotification(context: Context) {
@@ -146,4 +137,14 @@ object MyNotificationManager {
         }
     }
 
+    private fun createSnoozePendingIntent(context: Context, chargingState: ChargingState, batteryPercent: Int, snoozeTime: Long): NotificationCompat.Action {
+        val snoozeActionIntent = Intent(context, SnoozeService::class.java)
+            .putExtra(EXTRA_SNOOZE_DELAY, (snoozeTime * DateUtils.MINUTE_IN_MILLIS))
+            .putExtra(EXTRA_SNOOZE_STATE, chargingState)
+            .putExtra(EXTRA_SNOOZE_BATTERY, batteryPercent)
+        val snoozeActionPendingIntent: PendingIntent = PendingIntent.getService(
+            context, 0, snoozeActionIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val snoozeActionText = "Snooze $snoozeTime"
+        return NotificationCompat.Action(R.drawable.ic_skylight_notification, snoozeActionText, snoozeActionPendingIntent)
+    }
 }

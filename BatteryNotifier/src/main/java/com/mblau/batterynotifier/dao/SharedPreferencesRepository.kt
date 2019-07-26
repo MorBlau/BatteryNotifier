@@ -11,6 +11,8 @@ object SharedPreferencesRepository {
     const val LOW_BATTERY_THRESHOLD = "lowBatteryThreshold"
     const val HIGH_BATTERY_THRESHOLD = "highBatteryThreshold"
     const val NOTIFICATION_SOUND = "notificationSound"
+    const val DELAY_OPTION_1 = "delayOption1"
+    const val DELAY_OPTION_2 = "delayOption2"
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -38,6 +40,14 @@ object SharedPreferencesRepository {
 
     fun getHighBatteryThreshold(): Int {
         return sharedPreferences.getInt(HIGH_BATTERY_THRESHOLD, 0)
+    }
+
+    fun getDelayOption1(): Long {
+        return sharedPreferences.getLong(DELAY_OPTION_1, 5)
+    }
+
+    fun getDelayOption2(): Long {
+        return sharedPreferences.getLong(DELAY_OPTION_2, 15)
     }
 
     fun isHighBatteryServiceEnabled(): Boolean {

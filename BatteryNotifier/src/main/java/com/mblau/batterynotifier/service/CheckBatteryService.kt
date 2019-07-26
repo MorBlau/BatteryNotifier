@@ -8,14 +8,13 @@ import android.content.Intent.ACTION_POWER_DISCONNECTED
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.IBinder
-import android.text.format.DateUtils
 import android.util.Log
 import com.mblau.batterynotifier.manager.MyNotificationManager
 import com.mblau.batterynotifier.R
+import com.mblau.batterynotifier.dao.SharedPreferencesRepository
 import com.mblau.batterynotifier.task.CheckBatteryTaskConfig
 import com.mblau.batterynotifier.model.ChargingState
 import com.mblau.batterynotifier.receiver.BatteryChargeStateReceiver
-import com.mblau.batterynotifier.receiver.NotificationButtonReceiver
 import com.mblau.batterynotifier.task.CheckBatteryTask
 import java.util.*
 
@@ -25,7 +24,6 @@ class CheckBatteryService : Service() {
 
     private val myNotificationManager = MyNotificationManager
     private var batteryChargeStateReceiver: BatteryChargeStateReceiver? = null
-    var notificationButtonReceiver = NotificationButtonReceiver()
     private var checkBatteryTask: CheckBatteryTask? = null
     private var timer: Timer? = null
 
@@ -39,12 +37,12 @@ class CheckBatteryService : Service() {
         return null
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand called.")
         super.onStartCommand(intent, flags, startId)
         registerReceivers()
         val chargingState = checkChargingState()
-        createNewBatteryTask(chargingState)
+        createNewCheckBatteryTask(chargingState)
         val smallText = getString(R.string.sticky_text_collapsed)
         val bigText = getString(R.string.sticky_text_expanded)
         val notification = myNotificationManager.getStickyNotification(this,
@@ -53,7 +51,7 @@ class CheckBatteryService : Service() {
             startForeground(1, notification)
         instance = this
         startTimer(chargingState)
-        return Service.START_NOT_STICKY
+        return START_REDELIVER_INTENT
     }
 
     private fun startTimer(state: ChargingState) {
@@ -71,11 +69,11 @@ class CheckBatteryService : Service() {
     fun restartTimer(state: ChargingState) {
         Log.d(TAG, "Restarting task timer.")
         myNotificationManager.removeNotification(this)
-        createNewBatteryTask(state)
+        createNewCheckBatteryTask(state)
         startTimer(state)
     }
 
-    private fun createNewBatteryTask(state: ChargingState) {
+    private fun createNewCheckBatteryTask(state: ChargingState) {
         val config = checkBatteryTaskDataMap[state]!!
         config.didNotify = false
         checkBatteryTask?.cancel()
@@ -120,7 +118,8 @@ class CheckBatteryService : Service() {
     private fun checkChargingState(): ChargingState {
         return checkChargingStateAndBatteryPercent().component1()
     }
-        override fun onDestroy() {
+
+    override fun onDestroy() {
         Log.d(TAG, "onDestroy called.")
         timer?.cancel()
         unregisterReceivers()
@@ -136,6 +135,12 @@ class CheckBatteryService : Service() {
             Log.d(TAG, "start called.")
             val intent = Intent(context, CheckBatteryService::class.java)
             context.startService(intent)
+        }
+
+        fun startIfNeeded(context: Context) {
+            if (SharedPreferencesRepository.isServiceActive()) {
+                start(context)
+            }
         }
 
         fun stop(context: Context) {

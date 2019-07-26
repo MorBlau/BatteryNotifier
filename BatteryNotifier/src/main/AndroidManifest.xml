@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.mblau.batterynotifier">
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -16,26 +17,41 @@
             </intent-filter>
         </receiver>
         <receiver
-                android:name=".receiver.SystemEventReceiver"
-                android:enabled="true"
-                android:exported="true">
-
+                android:name=".receiver.RebootEventReceiver"
+                android:enabled="false"
+                android:permission="android.permission.RECEIVE_BOOT_COMPLETED" >
             <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <!--For HTC devices-->
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
-                <data android:scheme="package" android:path="com.mblau.batterynotifier" />
+                <data android:scheme="package"/>
             </intent-filter>
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.PACKAGE_REPLACED" />-->
+            <!--<data android:scheme="package" android:path="com.mblau.batterynotifier" />-->
+            <!--</intent-filter>-->
         </receiver>
-        <receiver android:name=".receiver.NotificationButtonReceiver">
+        <receiver
+                android:name=".receiver.AppUpdateReceiver"
+                android:enabled="false">
             <intent-filter>
-                <action android:name="com.mblau.batterynotifier.action.ACTION_SNOOZE"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" android:path="com.mblau.batterynotifier"/>
             </intent-filter>
         </receiver>
         <service
+                android:name=".service.SnoozeService">
+        </service>
+        <service
                 android:name=".service.CheckBatteryService"
-                android:exported="false">
+                android:exported="true"
+                android:enabled="true">
         </service>
 
         <activity
