@@ -33,7 +33,7 @@ class CheckBatteryTaskConfig(val chargingState: ChargingState) {
     }
 
     fun verifyChargingState(chargingState: ChargingState): Boolean {
-        return this.chargingState.equals(chargingState)
+        return this.chargingState == chargingState
     }
 
     fun hasValuePassedThreshold(value: Int, threshold: Int): Boolean {
