@@ -4,8 +4,11 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.net.Uri
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
@@ -43,6 +46,7 @@ object MyNotificationManager {
         val colorId = data.getColorId()
         val smallText = context.getString(data.getSmallTextId(), batteryPercent)
         val bigText = context.getString(data.getBigTextId(), batteryPercent)
+        val soundUri = getSoundUri(context)
 
 //        val intentOpenApp = Intent(context, MainActivity::class.java).apply {
 //            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -128,7 +132,16 @@ object MyNotificationManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(channelId, channelName, importance).apply {
                 description = channelDescription
-                if (!withSound) setSound(null, null)
+                if (withSound) {
+                    val attributes = AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .build()
+                    setSound(getSoundUri(context), attributes)
+                    enableVibration(true)
+                    enableLights(true)
+                }
+                else
+                    setSound(null, null)
             }
             // Register the channel with the system
             val notificationManager: NotificationManager =
@@ -146,5 +159,9 @@ object MyNotificationManager {
             context, 0, snoozeActionIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         val snoozeActionText = "Snooze $snoozeTime"
         return NotificationCompat.Action(R.drawable.ic_skylight_notification, snoozeActionText, snoozeActionPendingIntent)
+    }
+
+    private fun getSoundUri(context: Context): Uri {
+        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.packageName + "/" + R.raw.tweet)
     }
 }
