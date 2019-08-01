@@ -32,6 +32,13 @@ class CheckBatteryTaskConfig(val chargingState: ChargingState) {
         return eventType.bigTextId
     }
 
+    fun getSnoozeButtonValues(): List<Long> {
+        return when (eventType) {
+            EventType.HIGH_BATTERY -> ArrayList()
+            EventType.LOW_BATTERY -> SharedPreferencesRepository.getDelayOptions()
+        }
+    }
+
     fun verifyChargingState(chargingState: ChargingState): Boolean {
         return this.chargingState == chargingState
     }

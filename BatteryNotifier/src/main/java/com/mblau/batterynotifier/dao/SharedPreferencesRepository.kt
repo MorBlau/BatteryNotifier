@@ -50,6 +50,10 @@ object SharedPreferencesRepository {
         return sharedPreferences.getLong(DELAY_OPTION_2, 15)
     }
 
+    fun getDelayOptions(): List<Long> {
+        return listOf(getDelayOption1(), getDelayOption2())
+    }
+
     fun isHighBatteryServiceEnabled(): Boolean {
         return getHighBatteryThreshold() > 0
     }

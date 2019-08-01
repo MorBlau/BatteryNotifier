@@ -46,17 +46,6 @@ object MyNotificationManager {
         val colorId = data.getColorId()
         val smallText = context.getString(data.getSmallTextId(), batteryPercent)
         val bigText = context.getString(data.getBigTextId(), batteryPercent)
-        val soundUri = getSoundUri(context)
-
-//        val intentOpenApp = Intent(context, MainActivity::class.java).apply {
-//            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//        }
-//        val openAppPendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intentOpenApp, 0)
-
-        val snoozeTime1 = SharedPreferencesRepository.getDelayOption1()
-        val snoozeTime2 = SharedPreferencesRepository.getDelayOption2()
-        val snoozeAction1 = createSnoozePendingIntent(context, data.chargingState, batteryPercent, snoozeTime1)
-        val snoozeAction2 = createSnoozePendingIntent(context, data.chargingState, batteryPercent, snoozeTime2)
 
         val channelDescription = context.getString(R.string.channel_description_alert)
         val color = context.resources.getColor(colorId, context.theme)
@@ -66,11 +55,9 @@ object MyNotificationManager {
             .setColor(color)
             .setColorized(true)
             .setContentText(smallText)
-//            .setContentIntent(openAppPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        builder.addAction(snoozeAction1)
-        builder.addAction(snoozeAction2)
+        addButtons(context, builder, data, batteryPercent)
 
         if (bigText != smallText) builder.setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
 
@@ -112,7 +99,7 @@ object MyNotificationManager {
             .setColorized(true)
             .setContentText(smallText)
             .setContentIntent(emptyPendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
             .setAutoCancel(true)
             .addAction(action)
 
@@ -147,6 +134,13 @@ object MyNotificationManager {
             val notificationManager: NotificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun addButtons(context: Context, builder: NotificationCompat.Builder, data: CheckBatteryTaskConfig, batteryPercent: Int) {
+        for (snoozeTime in data.getSnoozeButtonValues()) {
+            val snoozeAction = createSnoozePendingIntent(context, data.chargingState, batteryPercent, snoozeTime)
+            builder.addAction(snoozeAction)
         }
     }
 
