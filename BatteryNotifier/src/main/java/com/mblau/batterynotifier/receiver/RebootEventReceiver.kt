@@ -15,7 +15,6 @@ class RebootEventReceiver: BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "onReceive called.")
-        Toast.makeText(context, "Reboot event received.", Toast.LENGTH_LONG).show()
 
         // after reboot, we need to re-initialize the repository
         sharedPreferencesRepository.initialize(context)
@@ -23,7 +22,6 @@ class RebootEventReceiver: BroadcastReceiver() {
         when (intent.action) {
             Intent.ACTION_BOOT_COMPLETED -> {
                 Log.d(TAG, "Action is ${intent.action}, starting service.")
-                Toast.makeText(context, "Reboot event received.", Toast.LENGTH_LONG).show()
                 CheckBatteryService.startIfNeeded(context)
             }
             else -> Log.d(TAG, "Wrong intent, aborting.")

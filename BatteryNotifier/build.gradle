@@ -18,8 +18,8 @@ android {
         applicationId "com.mblau.batterynotifier"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 14
-        versionName "1.0.11"
+        versionCode 15
+        versionName "1.0.12"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     applicationVariants.all { variant ->
