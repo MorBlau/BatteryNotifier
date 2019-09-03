@@ -1,69 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<layout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:showIn="@layout/activity_main"
-        tools:context=".MainActivity">
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <data>
+        <variable
+                name="batterySetting"
+                type="com.mblau.batterynotifier.viewmodel.Setting" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:showIn="@layout/activity_main_material"
+            tools:context=".MainActivity">
 
         <RelativeLayout
                 android:layout_gravity="top"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/option_margin"
                 android:layout_marginTop="@dimen/option_margin"
                 android:layout_marginEnd="@dimen/option_margin"
         >
             <TextView
-                    android:layout_gravity="left"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
                     android:text="@string/low_battery"
                     android:id="@+id/textView"/>
-            <android.support.v7.widget.AppCompatSpinner
-                    android:layout_gravity="right"
+            <SeekBar
+                    style="@style/Widget.AppCompat.SeekBar.Discrete"
+                    android:layout_centerHorizontal="true"
                     android:layout_width="wrap_content"
-                    android:layout_alignParentEnd="true"
+                    android:layout_below="@id/textView"
                     android:layout_height="wrap_content"
+                    android:max="@{batterySetting.spinnerLabels.size()}"
+                    android:onValueChange="@{batterySetting.onValueChange()}"
+                    android:text="@{batterySetting.transform()}"
                     android:id="@+id/lowBatterySpinner"
             >
 
-            </android.support.v7.widget.AppCompatSpinner>
+            </SeekBar>
 
         </RelativeLayout>
-        <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_gravity="center"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/option_margin"
-                android:layout_marginEnd="@dimen/option_margin"
-                android:layout_marginTop="@dimen/option_margin"
-        >
-            <TextView
-                    android:layout_gravity="left|center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:text="@string/high_battery"
-                    android:layout_marginStart="0dp"/>
-            <android.support.v7.widget.AppCompatSpinner
-                    android:layout_gravity="right|center"
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/highBatterySpinner"
-            >
-            </android.support.v7.widget.AppCompatSpinner>
 
-        </RelativeLayout>
-    </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+</layout>

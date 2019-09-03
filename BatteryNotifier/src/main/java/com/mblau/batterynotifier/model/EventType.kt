@@ -1,6 +1,7 @@
 package com.mblau.batterynotifier.model
 
 import com.mblau.batterynotifier.R
+import com.mblau.batterynotifier.dao.SharedPreferencesRepository
 
 enum class EventType(
 
@@ -8,7 +9,8 @@ enum class EventType(
     val notificationColorId: Int,
     val smallTextId: Int,
     val bigTextId: Int,
-    val hasValuePassedThreshold: (Int, Int) -> Boolean
+    val hasValuePassedThreshold: (Int, Int) -> Boolean,
+    val threshold: () -> Int
 ) {
 
     HIGH_BATTERY(
@@ -18,6 +20,9 @@ enum class EventType(
         R.string.notify_high_expanded,
         fun(value: Int, threshold: Int): Boolean {
             return (value >= threshold)
+        },
+        fun (): Int {
+            return SharedPreferencesRepository.getHighBatteryThreshold()
         }
     ),
     LOW_BATTERY(
@@ -27,8 +32,12 @@ enum class EventType(
         R.string.notify_low_expanded,
         fun(value: Int, threshold: Int): Boolean {
             return (value <= threshold)
+        },
+        fun (): Int {
+            return SharedPreferencesRepository.getLowBatteryThreshold()
         }
     );
+
 
 //    override fun toString(): String {
 //        return super.toString()
